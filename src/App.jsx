@@ -1,33 +1,37 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import * as Tone from 'tone';
 import './App.css'
 
 function App() {
-  const [count, setCount] = useState(0)
+  function playSound() {
+    Tone.start().then(() => {
+      // create two monophonic synths
+      const synthA = new Tone.FMSynth().toDestination();
+      const synthB = new Tone.AMSynth().toDestination();
+      //play a note every quarter-note
+      const loopA = new Tone.Loop((time) => {
+        synthA.triggerAttackRelease("C2", "8n", time);
+      }, "4n").start(0);
+      //play another note every off quarter-note, by starting it "8n"
+      const loopB = new Tone.Loop((time) => {
+        synthB.triggerAttackRelease("C4", "8n", time);
+      }, "4n").start("8n");
+      // all loops start when the Transport is started
+      Tone.getTransport().start();
+      // ramp up to 800 bpm over 10 seconds
+      Tone.getTransport().bpm.rampTo(800, 0.1);
+    });
+  }
 
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
       <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
+        <button onClick={playSound}>
+          sound!!!!!
         </button>
         <p>
           Edit <code>src/App.jsx</code> and save to test HMR
         </p>
       </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
     </>
   )
 }
